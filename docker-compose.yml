@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+    todo_client:
+        image: todo_client
+        # restart: unless-stopped
+        stdin_open: true
+        ports:
+            - "3000:3000"
+        networks:
+            - todo-app
+        volumes:
+            - ./client/:/usr/src/todo
+            - /usr/src/todo/node_modules
+
+    todo_server:
+        image: todo_sever
+        stdin_open: true
+        # restart: unless-stopped
+        ports:
+            - "4000:4000"
+        networks:
+            - todo-app
+        depends_on:
+            - mongo
+        volumes:
+            - ./server/:/usr/src/todo
+            - /usr/src/todo/node_modules
+
+    mongo:
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        networks:
+            - todo-app
+        volumes:
+            - mongo-data:/data/db
+
+networks:
+    todo-app:
+        driver: bridge
+
+volumes:
+    mongo-data:
+        driver: local
